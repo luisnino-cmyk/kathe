@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiencia Empresarial - Candidatos 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+
+        .header {
+            background: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .header h2 {
+            font-size: 1.4em;
+            color: #546e7a;
+            font-weight: 500;
+        }
+
+        .header p {
+            color: #78909c;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .section h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .candidate-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .candidate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .candidate-btn.selected {
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            margin: 30px auto;
+            max-width: 700px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: #37474f;
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background: #f5f5f5;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .profile-section {
+            margin-top: 20px;
+        }
+
+        .profile-card {
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid;
+            background: #f9f9f9;
+        }
+
+        .profile-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .profile-card p {
+            color: #546e7a;
+            line-height: 1.6;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .candidates-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Experiencia Empresarial</h1>
+        <h2>Candidatos Presidencia Colombia 2026</h2>
+        <p>Análisis basado en: Facturación de empresas, Creación de empresas, Creación de empleo, Creación de productos</p>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h3>Seleccione candidatos para comparar (mínimo 1):</h3>
+            <div class="candidates-grid" id="candidatesGrid"></div>
+        </div>
+
+        <div class="section">
+            <h3>Comparación Visual</h3>
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Tabla Comparativa</h3>
+            <table id="comparisonTable">
+                <thead>
+                    <tr>
+                        <th>Candidato</th>
+                        <th>Empresas</th>
+                        <th>Productos</th>
+                        <th>Riqueza</th>
+                        <th>Gestión</th>
+                        <th>Promedio</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>Perfil Empresarial de Candidatos Seleccionados</h3>
+            <div class="note">
+                <strong>Nota:</strong> Esta evaluación prioriza la creación de empresas y riqueza en el sector privado (90% del puntaje) sobre la gestión pública (10%).
+            </div>
+            <div class="profile-section" id="profileSection"></div>
+        </div>
+    </div>
+
+    <script>
+        const candidatesData = [
+            {
+                name: "Abelardo de la Espriella",
+                color: "#9c27b0",
+                scores: { empresas: 10, productos: 10, riqueza: 9, gestion: 8 },
+                profile: "Fundó De La Espriella Lawyers (2002, ~100 abogados), licores (Ron Defensor, Vino Fratellone), moda de lujo, inmobiliaria. 4 sectores"
+            },
+            {
+                name: "Daniel Quintero",
+                color: "#2196f3",
+                scores: { empresas: 10, productos: 4, riqueza: 4, gestion: 5 },
+                profile: "Fundó Intrasoft (2005), empresas tecnológicas. Director iNNpulsa, Valle del Software"
+            },
+            {
+                name: "Miguel Uribe Londoño",
+                color: "#4caf50",
+                scores: { empresas: 10, productos: 0, riqueza: 5, gestion: 5 },
+                profile: "Presidente Fedecacao, empresario automotriz (Casa Británica, 60 años)"
+            },
+            {
+                name: "David Luna",
+                color: "#f44336",
+                scores: { empresas: 0, productos: 7, riqueza: 2, gestion: 5 },
+                profile: "Presidente Alianza In (gremio), MinTIC, políticas digitales empresariales"
+            },
+            {
+                name: "María F. Cabal",
+                color: "#ff9800",
+                scores: { empresas: 10, productos: 4, riqueza: 5, gestion: 6 },
+                profile: "Fundó Student Travel Center (2003), Presidenta Fundagán. Familia empresarial"
+            },
+            {
+                name: "Vicky Dávila",
+                color: "#e91e63",
+                scores: { empresas: 0, productos: 7, riqueza: 2, gestion: 7 },
+                profile: "Directora Revista Semana, periodista investigativa. Sin empresas propias"
+            },
+            {
+                name: "Juan C. Pinzón",
+                color: "#ff6f00",
+                scores: { empresas: 0, productos: 7, riqueza: 2, gestion: 7 },
+                profile: "Ministro de Defensa, Embajador, VP Citigroup. Sin empresas propias"
+            },
+            {
+                name: "Mauricio Cárdenas",
+                color: "#9c27b0",
+                scores: { empresas: 0, productos: 7, riqueza: 4, gestion: 7 },
+                profile: "5 Ministerios, Gerente EEB, Juntas Ecopetrol/ISA. Sin empresas propias"
+            },
+            {
+                name: "Claudia López",
+                color: "#ff5722",
+                scores: { empresas: 0, productos: 7, riqueza: 2, gestion: 5 },
+                profile: "Alcaldesa Bogotá, Senadora. Investigaciones parapolítica. Sin empresas"
+            },
+            {
+                name: "Roy Barreras",
+                color: "#8bc34a",
+                scores: { empresas: 10, productos: 4, riqueza: 5, gestion: 6 },
+                profile: "IPS Medicina Alternativa, inmobiliarias. Presidente del Senado"
+            },
+            {
+                name: "Sergio Fajardo",
+                color: "#00bcd4",
+                scores: { empresas: 0, productos: 7, riqueza: 2, gestion: 5 },
+                profile: "Alcalde Medellín, Gobernador Antioquia. Académico. Sin empresas"
+            },
+            {
+                name: "Carolina Corcho",
+                color: "#e91e63",
+                scores: { empresas: 0, productos: 10, riqueza: 2, gestion: 5 },
+                profile: "Ministra Salud, Ley Estatutaria Salud. Médica. Sin empresas"
+            },
+            {
+                name: "Iván Cepeda",
+                color: "#9c27b0",
+                scores: { empresas: 0, productos: 10, riqueza: 2, gestion: 5 },
+                profile: "Senador, fundador MOVICE. Defensor DDHH. Sin empresas"
+            }
+        ];
+
+        let selectedCandidates = [];
+        let chart = null;
+
+        function calculateAverage(scores) {
+            return ((scores.empresas * 0.3) + (scores.productos * 0.3) + (scores.riqueza * 0.3) + (scores.gestion * 0.1)).toFixed(1);
+        }
+
+        function initCandidateButtons() {
+            const grid = document.getElementById('candidatesGrid');
+            candidatesData.forEach((candidate, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'candidate-btn';
+                btn.style.background = candidate.color;
+                btn.textContent = candidate.name;
+                btn.onclick = () => toggleCandidate(index);
+                grid.appendChild(btn);
+            });
+        }
+
+        function toggleCandidate(index) {
+            const idx = selectedCandidates.indexOf(index);
+            if (idx > -1) {
+                selectedCandidates.splice(idx, 1);
+            } else {
+                selectedCandidates.push(index);
+            }
+            updateUI();
+        }
+
+        function updateUI() {
+            updateButtons();
+            updateChart();
+            updateTable();
+            updateProfiles();
+        }
+
+        function updateButtons() {
+            const buttons = document.querySelectorAll('.candidate-btn');
+            buttons.forEach((btn, index) => {
+                btn.classList.toggle('selected', selectedCandidates.includes(index));
+            });
+        }
+
+        function updateChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            const datasets = selectedCandidates.map(idx => {
+                const candidate = candidatesData[idx];
+                return {
+                    label: candidate.name,
+                    data: [
+                        candidate.scores.empresas,
+                        candidate.scores.productos,
+                        candidate.scores.riqueza,
+                        candidate.scores.gestion
+                    ],
+                    backgroundColor: candidate.color + '33',
+                    borderColor: candidate.color,
+                    borderWidth: 2,
+                    pointBackgroundColor: candidate.color
+                };
+            });
+
+            chart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Propiedad\nEmpresas', 'Creación\nProductos', 'Creación\nRiqueza', 'Gestión\nEmpresarial'],
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            const sorted = selectedCandidates
+                .map(idx => ({ ...candidatesData[idx], index: idx }))
+                .sort((a, b) => calculateAverage(b.scores) - calculateAverage(a.scores));
+
+            sorted.forEach(candidate => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>
+                        <div class="candidate-name">
+                            <span class="color-dot" style="background: ${candidate.color}"></span>
+                            <strong>${candidate.name}</strong>
+                        </div>
+                    </td>
+                    <td>${(candidate.scores.empresas * 0.3).toFixed(1)}</td>
+                    <td>${(candidate.scores.productos * 0.3).toFixed(1)}</td>
+                    <td>${(candidate.scores.riqueza * 0.3).toFixed(1)}</td>
+                    <td>${(candidate.scores.gestion * 0.1).toFixed(1)}</td>
+                    <td><strong>${calculateAverage(candidate.scores)}/10</strong></td>
+                `;
+            });
+        }
+
+        function updateProfiles() {
+            const section = document.getElementById('profileSection');
+            section.innerHTML = '';
+
+            selectedCandidates.forEach(idx => {
+                const candidate = candidatesData[idx];
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                card.style.borderLeftColor = candidate.color;
+                card.innerHTML = `
+                    <h4>${candidate.name}</h4>
+                    <p>${candidate.profile}</p>
+                `;
+                section.appendChild(card);
+            });
+        }
+
+        // Inicializar con los primeros 3 candidatos seleccionados
+        selectedCandidates = [0, 1, 2];
+        initCandidateButtons();
+        updateUI();
+    </script>
+</body>
+</html>
